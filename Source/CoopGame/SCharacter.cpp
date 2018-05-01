@@ -12,14 +12,14 @@ ASCharacter::ASCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-          SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-          SpringArmComp->SetupAttachment(RootComponent);
-          SpringArmComp->bUsePawnControlRotation = true;
+    SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+    SpringArmComp->SetupAttachment(RootComponent);
+    SpringArmComp->bUsePawnControlRotation = true;
 
-          GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+    GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
-          CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-          CameraComp->SetupAttachment(SpringArmComp);
+    CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+    CameraComp->SetupAttachment(SpringArmComp);
 }
 
 // Called when the game starts or when spawned
@@ -70,5 +70,13 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
           PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::EndCrouch);
 
           PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+}
+
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	if (CameraComp) {
+		return CameraComp->GetComponentLocation();
+	}
+	return Super::GetPawnViewLocation();
 }
 
