@@ -19,21 +19,36 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-          void MoveForward(float Value);
+	void MoveForward(float Value);
 
-          void MoveRight(float Value);
+	void MoveRight(float Value);
 
-          void BeginCrouch();
+	void BeginCrouch();
 
-          void EndCrouch();
+	void EndCrouch();
 
-          UPROPERTY(VisibleAnywhere, BlueprintReadOnly,  Category = "Components")
-          class UCameraComponent* CameraComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UCameraComponent* CameraComp;
 
-          UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-          class USpringArmComponent* SpringArmComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class USpringArmComponent* SpringArmComp;
 
-public:	
+	bool bWantsToZoom;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float ZoomedFOV;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1f, ClampMax = 100.0f))
+	float ZoomInterpSpeed;
+
+	/* Default FOV set during begin play */
+	float DefaultFOV;
+
+	void BeginZoom();
+
+	void EndZoom();
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -41,5 +56,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual FVector GetPawnViewLocation() const override;
-	
+
 };
