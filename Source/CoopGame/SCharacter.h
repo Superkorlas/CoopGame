@@ -48,6 +48,16 @@ protected:
 
 	void EndZoom();
 
+	class ASWeapon* CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	TSubclassOf<ASWeapon> StarterWeaponClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
+	FName WeaponAttachSocketName;
+
+	void Fire();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
