@@ -6,6 +6,8 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/MeshComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "CoopGame.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -16,9 +18,9 @@ FAutoConsoleVariableRef CVARDebugWeaponDrawing(
 
 // Sets default values
 ASWeapon::ASWeapon()
-{   
-    MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
-    RootComponent = MeshComp;
+{
+	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
+	RootComponent = MeshComp;
 
 	MuzzleSocketName = "MuzzleSocket";
 	TracerTargetName = "Target";
@@ -42,6 +44,7 @@ void ASWeapon::Fire()
 		QueryParams.AddIgnoredActor(MyOwner);
 		QueryParams.AddIgnoredActor(this);
 		QueryParams.bTraceComplex = true;
+		QueryParams.bReturnPhysicalMaterial = true;
 
 		// Particle "Target" parameter
 		FVector TracerEndPoint = TraceEnd;
@@ -53,9 +56,24 @@ void ASWeapon::Fire()
 
 			UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
-			if (ImpactEffect) {
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+			UParticleSystem* SelectedEffect = nullptr;
+			switch (SurfaceType) {
+				case SURFACE_FLESHDEFAULT:
+					SelectedEffect = FleshImpactEffect;
+					break;
+				case SURFACE_FLESHVULNERABLE:
+					SelectedEffect = FleshImpactEffect;
+					break;
+				default:
+					SelectedEffect = DefaultImpactEffect;
+					break;
 			}
+
+			if (SelectedEffect) {
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			}
+
 			TracerEndPoint = Hit.ImpactPoint;
 		}
 
@@ -78,6 +96,14 @@ void ASWeapon::PlayFireEffects(FVector TraceEnd)
 		UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
 		if (TracerComp) {
 			TracerComp->SetVectorParameter(TracerTargetName, TraceEnd);
+		}
+	}
+
+	APawn* MyOwner = Cast<APawn>(GetOwner());
+	if (MyOwner) {
+		APlayerController* PC = Cast<APlayerController>(MyOwner->GetController());
+		if (PC) {
+			PC->ClientPlayCameraShake(FireCamShake);
 		}
 	}
 }
