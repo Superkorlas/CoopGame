@@ -33,5 +33,5 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
-	FOnHealthChangeSignature OnHealthChange;
+	FOnHealthChangeSignature OnHealthChanged;
 };
