@@ -115,8 +115,6 @@ void ASCharacter::OnHealthChanged(USHealthComponent * OwningHealthComp, float He
 	}
 }
 
-
-
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
@@ -164,5 +162,6 @@ void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASCharacter, CurrentWeapon);
+	DOREPLIFETIME(ASCharacter, bDied);
 }
 
