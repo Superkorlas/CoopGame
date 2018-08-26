@@ -10,6 +10,7 @@
 #include "SHealthComponent.h"
 #include "Components/SphereComponent.h"
 #include "SCharacter.h"
+#include "Sound/SoundCue.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -42,6 +43,7 @@ ASTrackerBot::ASTrackerBot()
 	ExplosionRadius = 200.0f;
 
 	bStartedSelfDestruction = false;
+	SelfDamageInterval = 0.25f;
 }
 
 // Called when the game starts or when spawned
@@ -102,6 +104,8 @@ void ASTrackerBot::SelfDestruct()
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 	
+	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
+
 	// Destroy actor immediatly
 	Destroy();
 }
@@ -114,8 +118,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 	float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
 	if (DistanceToTarget <= RequireDistanceToTarget) {
 		NextPathPoint = GetNextPathPoint();
-
-		DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
+		//DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
 	} else {
 		// Keep moving towards next target
 		FVector ForceDirection = NextPathPoint - GetActorLocation();
@@ -142,10 +145,11 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 			// We overlapped with a player
 			
 			// Start self destruction sequence
-			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
 
 			bStartedSelfDestruction = true;
+
+			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 		}
 	}
 }
-
