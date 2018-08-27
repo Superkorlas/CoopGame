@@ -86,4 +86,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	// Challenge code (trackerbot)
+protected:
+	// Find nearby enemies and grow in 'power_level' based on the amount
+	void OnCheckNearbyBots();
+	// The power boost of the bot
+	int32 PowerLevel;
 };

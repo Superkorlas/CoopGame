@@ -37,7 +37,7 @@ ASTrackerBot::ASTrackerBot()
 
 	bUseVelocityChange = true;
 	MovementForce = 500.0f;
-	RequireDistanceToTarget = 100.0f;
+	RequireDistanceToTarget = 300.0f;
 
 	ExplosionDamage = 40.0f;
 	ExplosionRadius = 200.0f;
@@ -54,8 +54,11 @@ void ASTrackerBot::BeginPlay()
 	if (Role == ROLE_Authority) {
 		// Find initial move-to
 		NextPathPoint = GetNextPathPoint();
-	}
 
+		// Every second we update our power-level based on nearby bots (challenge code)
+		FTimerHandle TimerHandle_CheckPowerLevel;
+		GetWorldTimerManager().SetTimer(TimerHandle_CheckPowerLevel, this, &ASTrackerBot::OnCheckNearbyBots, 1.0f, true);
+	}
 }
 
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
@@ -81,6 +84,11 @@ FVector ASTrackerBot::GetNextPathPoint()
 	// Hack to get player location
 	ACharacter* PlayerPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
 	UNavigationPath* NavPath = UNavigationSystem::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn);
+
+	/* Error */
+	if (NavPath == nullptr)
+		return FVector::ZeroVector;
+	/**/
 
 	if (NavPath->PathPoints.Num() > 1) {
 		// Return next point in the path
@@ -108,8 +116,11 @@ void ASTrackerBot::SelfDestruct()
 		TArray<AActor*> IgnoredActors;
 		IgnoredActors.Add(this);
 
+		// Increase the damage based on the power level (challenge code)
+		float ActualDamage = ExplosionDamage + (ExplosionDamage * PowerLevel);
+
 		// Apply damage!
-		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+		UGameplayStatics::ApplyRadialDamage(this, ActualDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 
 		SetLifeSpan(2.0f);
@@ -174,4 +185,54 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 		}
 	}
+}
+
+// Challenge code (trackerbot)
+void ASTrackerBot::OnCheckNearbyBots()
+{
+	// Distance to check for nearby bots
+	const float Radius = 600.0f;
+
+	// Create temporary collision shape for overlaps
+	FCollisionShape CollShape;
+	CollShape.SetSphere(Radius);
+
+	// Only find pawns (eg. players and AI bots)
+	FCollisionObjectQueryParams QueryParams;
+	// Our tracker bot's mesh component is set to Physics Body in Blueprint (default profile)
+	QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+	QueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
+
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
+
+	int32 NrOfBots = 0;
+	// Loop over the results using a "range based for loop"
+	for (FOverlapResult Result : Overlaps) {
+		// Check if we overlapped with another tracker bot
+		ASTrackerBot* Bot = Cast<ASTrackerBot>(Result.GetActor());
+		if (Bot && Bot != this) {
+			NrOfBots++;
+		}
+	}
+
+	const int32 MaxPowerLevel = 4;
+
+	// Clamp between min=0 and max=4
+	PowerLevel = FMath::Clamp(NrOfBots, 0, MaxPowerLevel);
+
+	// Update the material color
+	if (MatInst == nullptr) {
+		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+
+	if (MatInst) {
+		float Alpha = PowerLevel / (float)MaxPowerLevel;
+
+		MatInst->SetScalarParameterValue("PowerLevelAlpha", Alpha);
+	}
+
+	//DrawDebugString(GetWorld(), GetActorLocation(), FString::FromInt(NrOfBots), this, FColor::White, 1.0f, true);
 }
