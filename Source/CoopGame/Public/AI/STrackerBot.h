@@ -76,6 +76,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	class USoundCue* ExplodeSound;
 
+	/*Best IA*/
+	float _currentTime;
+	FVector _lastLocation;
+	/******/
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
