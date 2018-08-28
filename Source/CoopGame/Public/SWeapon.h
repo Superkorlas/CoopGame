@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "SWeapon.generated.h"
 
+class USkeletalMeshComponent;
+class UParticleSystem;
+
 // Contains information of a single hitscan weapon linetrace
 USTRUCT()
 struct FHitScanTrace
@@ -33,7 +36,7 @@ protected:
 	virtual void BeginPlay() override;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    class USkeletalMeshComponent* MeshComp;
+    USkeletalMeshComponent* MeshComp;
 
 	void PlayFireEffects(FVector TraceEnd);
 
@@ -49,16 +52,16 @@ protected:
 	FName TracerTargetName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	class UParticleSystem*  MuzzleEffect;
+	UParticleSystem*  MuzzleEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	class UParticleSystem* DefaultImpactEffect;
+	UParticleSystem* DefaultImpactEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	class UParticleSystem* FleshImpactEffect;
+	UParticleSystem* FleshImpactEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	class UParticleSystem* TracerEffect;
+	UParticleSystem* TracerEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> FireCamShake;

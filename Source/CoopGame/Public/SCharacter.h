@@ -6,6 +6,11 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class UCameraComponent;
+class USpringArmComponent;
+class USHealthComponent;
+class ASWeapon;
+
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
 {
@@ -28,13 +33,13 @@ protected:
 	void EndCrouch();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UCameraComponent* CameraComp;
+	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class USpringArmComponent* SpringArmComp;
+	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class USHealthComponent* HealthComp;
+	USHealthComponent* HealthComp;
 
 	bool bWantsToZoom;
 

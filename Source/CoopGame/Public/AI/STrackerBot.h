@@ -6,6 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "STrackerBot.generated.h"
 
+class USHealthComponent;
+class USphereComponent;
+class USoundCue;
+
 UCLASS()
 class COOPGAME_API ASTrackerBot : public APawn
 {
@@ -23,10 +27,10 @@ protected:
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
-	class USHealthComponent* HealthComp;
+	USHealthComponent* HealthComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
-	class USphereComponent* SphereComp;
+	USphereComponent* SphereComp;
 
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent * OwningHealthComp, float Health, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser);
@@ -71,10 +75,10 @@ protected:
 	void DamageSelf();
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
-	class USoundCue* SelfDestructSound;
+	USoundCue* SelfDestructSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
-	class USoundCue* ExplodeSound;
+	USoundCue* ExplodeSound;
 
 	/*Best IA*/
 	float _currentTime;

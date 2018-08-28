@@ -6,6 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "SExplosiveBarrel.generated.h"
 
+class USHealthComponent;
+class UStaticMeshComponent;
+class URadialForceComponent;
+class UParticleSystem;
+class UMaterialInterface;
+
 UCLASS()
 class COOPGAME_API ASExplosiveBarrel : public AActor
 {
@@ -17,13 +23,13 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class USHealthComponent* HealthComp;
+	USHealthComponent* HealthComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UStaticMeshComponent* MeshComp;
+	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class URadialForceComponent* RadialForce;
+	URadialForceComponent* RadialForce;
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
@@ -40,9 +46,9 @@ protected:
 
 	/* Particle to play when health reached zero */
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
-	class UParticleSystem* ExplosionEffect;
+	UParticleSystem* ExplosionEffect;
 
 	/* The material to replace the original on the mesh once exploded (a backened version) */
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
-	class UMaterialInterface* ExplodedMaterial;
+	UMaterialInterface* ExplodedMaterial;
 };
