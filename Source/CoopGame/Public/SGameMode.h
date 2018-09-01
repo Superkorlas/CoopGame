@@ -9,6 +9,11 @@
 /**
  * 
  */
+
+enum class EWaveState : uint8;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
+
 UCLASS()
 class COOPGAME_API ASGameMode : public AGameModeBase
 {
@@ -16,6 +21,8 @@ class COOPGAME_API ASGameMode : public AGameModeBase
 
 protected:
 	FTimerHandle TimerHandle_BotSpawner;
+
+	FTimerHandle TimerHandle_NextWaveStart;
 
 	// Bots to spawn in current wave
 	int32 NrOfBotsToSpawn;
@@ -27,24 +34,37 @@ protected:
 	
 protected:
 
+	void CheckAnyPlayerAlive();
+
+	void GameOver();
+
+	void CheckWaveState();
+
 	// Set timer for next startwave
 	void PrepareForNextWave();
 
 	// Start spawning bots
 	void StartWave();
 
+	void SpawnBotTimerElapsed();
+
 	// Stop spawning bots
 	void EndWave();
-
-	void SpawnBotTimerElapsed();
 
 	// Hook for BP to spawn a single bot
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
 	void SpawnNewBot();
 
+	void SetWaveState(EWaveState NewState);
+
 public:
 	ASGameMode();
 
 	virtual void StartPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY(BlueprintAssignable, Category = "GameMode")
+	FOnActorKilled OnActorKilled;
 	
 };

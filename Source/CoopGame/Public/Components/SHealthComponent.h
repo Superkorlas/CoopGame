@@ -28,6 +28,8 @@ protected:
 	UPROPERTY(ReplicatedUsing=OnRep_Health, BlueprintReadOnly, Category = "HealthComponent")
 	float Health;
 
+	bool bIsDead;
+
 	UFUNCTION()
 	void OnRep_Health(float OldHealth);
 
@@ -35,6 +37,8 @@ protected:
 	void  HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 public:
+	float GetHealth() const;
+
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnHealthChangeSignature OnHealthChanged;
 

@@ -5,8 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "../../Public/Challenges/SExplosiveBarrel.h"
-
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
