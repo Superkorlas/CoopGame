@@ -43,6 +43,8 @@ protected:
 	// Set timer for next startwave
 	void PrepareForNextWave();
 
+	void RestartDeadPlayers();
+
 	// Start spawning bots
 	void StartWave();
 
