@@ -80,11 +80,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	USoundCue* ExplodeSound;
 
-	/*Best IA*/
-	float _currentTime;
-	FVector _lastLocation;
-	/******/
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -95,6 +90,11 @@ public:
 protected:
 	// Find nearby enemies and grow in 'power_level' based on the amount
 	void OnCheckNearbyBots();
+
 	// The power boost of the bot
 	int32 PowerLevel;
+
+	FTimerHandle TimerHandle_RefreshPath;
+
+	void RefreshPath();
 };
