@@ -72,7 +72,7 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float H
 		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
 	}
 	if (MatInst) {
-		MatInst->SetScalarParameterValue("LastTakeDamageTaken", GetWorld()->TimeSeconds);
+		MatInst->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
 	}
 
 	// Explode on HitPoints == 0
